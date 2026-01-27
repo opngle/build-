@@ -1,0 +1,63 @@
+name: Build-ZBT-Z8103AX-FullCapacity
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch: 
+
+env:
+  REPO_URL: https://github.com/openwrt/openwrt
+  REPO_BRANCH: main
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Your Code
+        uses: actions/checkout@v4
+
+      - name: Setup Environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y $(curl -fsSL https://is.gd/depends_ubuntu_2204)
+          sudo timedatectl set-timezone "Asia/Shanghai"
+
+      - name: Clone OpenWrt Source
+        run: |
+          git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
+
+      - name: Update Feeds
+        run: |
+          cd openwrt
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+
+      - name: Apply Ripple Patch & Config
+        run: |
+          
+          cp .config openwrt/.config
+          
+          cd openwrt
+          
+          
+          sed -i 's/0x4000000/0x7a80000/g' target/linux/mediatek/dts/mt7981b-zbtlink-zbt-z8103ax.dts
+          
+         
+          echo "Checking Partition Logic..."
+          grep "0x7a80000" target/linux/mediatek/dts/mt7981b-zbtlink-zbt-z8103ax.dts
+          
+          make defconfig
+
+      - name: Download & Compile
+        run: |
+          cd openwrt
+          make download -j8
+          make -j$(nproc) || make -j1 V=s
+
+      - name: Upload Firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: ZBT-Z8103AX-FullCapacity-Firmware
+          path: openwrt/bin/targets/mediatek/filogic/*.bin
