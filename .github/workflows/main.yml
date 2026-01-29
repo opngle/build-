@@ -3,8 +3,8 @@ name: Build-ZBT-Z8103AX-FullCapacity
 on:
   push:
     branches:
-      - main
-      - master
+      - openwrt-24.10
+      
   workflow_dispatch: 
 
 env:
