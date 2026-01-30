@@ -27,11 +27,11 @@ jobs:
           arch: x64
 
       - name: Download OpenSSL source
-        shell: powershell
+        shell: bash
         run: |
           curl -L -o openssl.tar.gz https://www.openssl.org/source/openssl-${{ env.OPENSSL_VERSION }}.tar.gz
           tar -xf openssl.tar.gz
-          Rename-Item openssl-${{ env.OPENSSL_VERSION }} openssl
+          mv openssl-${{ env.OPENSSL_VERSION }} openssl
 
       - name: Configure OpenSSL
         working-directory: openssl
