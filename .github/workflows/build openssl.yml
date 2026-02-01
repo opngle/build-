@@ -62,21 +62,11 @@ jobs:
         working-directory: openssl
         shell: cmd
         run: |
-          if "%OPENSSL_BUILD_TYPE%"=="static" (
             perl Configure VC-WIN64A ^
               --prefix=%CD%\openssl_build ^
               --openssldir=%CD%\openssl_build\ssl ^
-              no-tests ^
-              no-asm ^
-              no-shared
-          ) else (
-            perl Configure VC-WIN64A ^
-              --prefix=%CD%\openssl_build ^
-              --openssldir=%CD%\openssl_build\ssl ^
-              no-tests ^
-              no-asm
-          )
-
+              no-tests            
+              
       # 7️⃣ Build OpenSSL
       - name: Build OpenSSL
         working-directory: openssl
