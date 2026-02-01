@@ -10,7 +10,7 @@ jobs:
     runs-on: windows-latest
 
     env:
-      OPENSSL_VERSION: "3.2.1"
+      OPENSSL_VERSION: "3.6.1"
 
     steps:
       - name: Checkout
@@ -19,7 +19,7 @@ jobs:
       - name: Install Perl (Strawberry)
         uses: shogo82148/actions-setup-perl@v1
         with:
-          perl-version: '5.32'
+          perl-version: '5.36'
 
       - name: Setup Visual Studio MSVC
         uses: ilammy/msvc-dev-cmd@v1
