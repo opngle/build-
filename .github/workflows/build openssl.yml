@@ -18,6 +18,15 @@ jobs:
       OPENSSL_BUILD_TYPE: shared
 
     steps:
+      - name: set complier env
+        shell: cmd
+        run: |
+          set CC-cl
+          set AR=lib
+          set LD=link
+          set RANLIB=echo
+        
+      
       # 1️⃣ Get the latest stable OpenSSL release from GitHub
       - name: Get latest OpenSSL release
         id: get_release
