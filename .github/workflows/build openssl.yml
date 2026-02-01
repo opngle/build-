@@ -52,7 +52,7 @@ jobs:
         run: |
           echo "Downloading OpenSSL $OPENSSL_VERSION"
           curl -L -o openssl.tar.gz \
-            https://github.com/openssl/openssl/releases/download/${OPENSSL_VERSION}/openssl-${OPENSSL_VERSION}.tar.gz
+            https://github.com/openssl/openssl/releases/download/${OPENSSL_VERSION}/${OPENSSL_VERSION}.tar.gz
           tar -xf openssl.tar.gz
           mv openssl-${OPENSSL_VERSION} openssl
 
