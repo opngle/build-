@@ -1,0 +1,66 @@
+name: Build OpenSSL for Windows
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build-openssl:
+    runs-on: windows-latest
+
+    env:
+      OPENSSL_VERSION: "3.2.1"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Perl (Strawberry)
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: '5.32'
+
+      - name: Setup Visual Studio MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Download OpenSSL source
+        shell: bash
+        run: |
+          curl -L -o openssl.tar.gz https://www.openssl.org/source/openssl-${{ env.OPENSSL_VERSION }}.tar.gz
+          tar -xf openssl.tar.gz
+          mv openssl-${{ env.OPENSSL_VERSION }} openssl
+
+      - name: Configure OpenSSL
+        working-directory: openssl
+        shell: cmd
+        run: |
+          perl Configure VC-WIN64A ^
+            --prefix=C:\openssl ^
+            --openssldir=C:\openssl\ssl ^
+            no-tests
+
+      - name: Build OpenSSL
+        working-directory: openssl
+        shell: cmd
+        run: |
+          nmake
+
+      - name: Install OpenSSL
+        working-directory: openssl
+        shell: cmd
+        run: |
+          nmake install
+
+      - name: Package artifacts
+        shell: powershell
+        run: |
+          Compress-Archive -Path C:\openssl -DestinationPath openssl-win64.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: openssl-win64
+          path: openssl-win64.zip
