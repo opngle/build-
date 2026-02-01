@@ -44,7 +44,7 @@ jobs:
       - name: Install Perl (Strawberry)
         uses: shogo82148/actions-setup-perl@v1
         with:
-          perl-version: '5.32'
+          perl-version: '5.36'
          
 
       # 4️⃣ Setup Visual Studio MSVC environment
@@ -70,8 +70,8 @@ jobs:
         shell: cmd
         run: |
             perl Configure VC-WIN64A ^
-              --prefix=%CD%\openssl_build ^
-              --openssldir=%CD%\openssl_build\ssl ^
+              --prefix=c:\openssl ^
+              --openssldir=C:\openssl\ssl ^
               no-tests            
               
       # 7️⃣ Build OpenSSL
