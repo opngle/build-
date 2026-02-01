@@ -69,6 +69,7 @@ jobs:
         working-directory: openssl
         shell: cmd
         run: |
+            cd /d %GITHUB_WORKSPACE%
             perl Configure VC-WIN64A ^
               --prefix=c:\openssl ^
               --openssldir=C:\openssl\ssl ^
