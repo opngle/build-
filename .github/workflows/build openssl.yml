@@ -14,14 +14,12 @@ jobs:
       PERL5OPT: -w0
       # Relative output directory for installation
       BUILD_DIR: ${{ github.workspace }}/openssl_build
-      # Control static or dynamic build: 'shared' or 'static'
-      OPENSSL_BUILD_TYPE: shared
 
     steps:
       - name: set complier env
         shell: cmd
         run: |
-          set CC-cl
+          set CC=c1
           set AR=lib
           set LD=link
           set RANLIB=echo
@@ -46,8 +44,8 @@ jobs:
       - name: Install Perl (Strawberry)
         uses: shogo82148/actions-setup-perl@v1
         with:
-          perl-version: '5.36'
-          verify: false
+          perl-version: '5.32'
+         
 
       # 4️⃣ Setup Visual Studio MSVC environment
       - name: Setup Visual Studio MSVC
