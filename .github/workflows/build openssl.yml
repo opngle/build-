@@ -63,4 +63,40 @@ jobs:
         run: |
           if "%OPENSSL_BUILD_TYPE%"=="static" (
             perl Configure VC-WIN64A ^
-              --
+              --prefix=%CD%\openssl_build ^
+              --openssldir=%CD%\openssl_build\ssl ^
+              no-tests ^
+              no-asm ^
+              no-shared
+          ) else (
+            perl Configure VC-WIN64A ^
+              --prefix=%CD%\openssl_build ^
+              --openssldir=%CD%\openssl_build\ssl ^
+              no-tests ^
+              no-asm
+          )
+
+      # 7️⃣ Build OpenSSL
+      - name: Build OpenSSL
+        working-directory: openssl
+        shell: cmd
+        run: nmake
+
+      # 8️⃣ Install OpenSSL to relative path
+      - name: Install OpenSSL
+        working-directory: openssl
+        shell: cmd
+        run: nmake install
+
+      # 9️⃣ Package the build artifacts
+      - name: Package artifacts
+        shell: powershell
+        run: |
+          Compress-Archive -Path "$PWD\openssl_build" -DestinationPath openssl-win64.zip
+
+      # 🔟 Upload the artifact for later use
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: openssl-win64
+          path: openssl-win64.zip
