@@ -50,11 +50,41 @@ jobs:
       - name: Download OpenSSL source
         shell: bash
         run: |
-          echo "Downloading OpenSSL $OPENSSL_VERSION"
-          curl -L -o openssl.tar.gz \
-            https://github.com/openssl/openssl/releases/download/${OPENSSL_VERSION}/${OPENSSL_VERSION}.tar.gz
-          tar -xf openssl.tar.gz
-          mv openssl-${OPENSSL_VERSION} openssl
+          echo "Downloading OpenSSL tag: $OPENSSL_VERSION"
+
+          # Prefer the universal tags tarball URL which works for any tag name format
+          URL="https://github.com/openssl/openssl/archive/refs/tags/${OPENSSL_VERSION}.tar.gz"
+          echo "Fetching: $URL"
+
+          # -f: fail on HTTP error; -L: follow redirects
+          curl -fL -o openssl.tar.gz "$URL" || {
+            echo "ERROR: download failed (HTTP error). Dumping response (for debugging):"
+            # If curl wrote something, show it for debugging
+            if [ -s openssl.tar.gz ]; then
+              echo "--- start of downloaded file ---"
+              head -n 50 openssl.tar.gz || true
+              echo "--- end of downloaded file ---"
+            else
+              echo "No file was written by curl."
+            fi
+            exit 1
+          }
+
+          # Quick sanity check: ensure file is a gzip tarball
+          if ! file openssl.tar.gz | grep -i 'gzip compressed data' >/dev/null 2>&1; then
+            echo "ERROR: downloaded file is not a gzip archive:"
+            file openssl.tar.gz
+            echo "Dumping start of file to help debug:"
+            head -n 50 openssl.tar.gz || true
+            exit 1
+          fi
+
+          # Determine top-level directory in the tarball and extract
+          TOPDIR=$(tar -tzf openssl.tar.gz | head -1 | cut -f1 -d"/")
+          echo "Top directory in archive: $TOPDIR"
+          tar -xzf openssl.tar.gz
+          mv "$TOPDIR" openssl
+
 
       # 6️⃣ Configure OpenSSL build
       - name: Configure OpenSSL
